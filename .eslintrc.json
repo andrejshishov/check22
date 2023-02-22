@@ -1,0 +1,26 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": ["airbnb/base"],
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+    "requireConfigFile": false,
+    "babelOptions": {
+        "presets": ["@babel/preset-react"]
+    }
+    },
+    "rules": {
+        "semi": "off",
+        "linebreak-style": "off",
+        "quotes": "off",
+        "eol-last": "off",
+        "react/jsx-props-no-spreading": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/prop-types": 0,
+        "indent": "off",
+        "class-methods-use-this": "off",
+        "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
+    }
+}
