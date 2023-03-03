@@ -2,36 +2,36 @@
 import { Component } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import NewTodo from '../new-todo';
-import TodoList from '../todo-list/todo-list';
-import Footer from '../footer/footer';
+import NewTodo from '../NewTodo';
+import TodoList from '../TodoList/TodoList';
+import Footer from '../Footer/Footer';
 
-import './app.css';
+import './App.css';
 
 export default class App extends Component {
   state = {
     items: [
-     this.createTodoItem('First task'),
-      this.createTodoItem('Second task'),
-      this.createTodoItem('Third task'),
+     this.createTodoItem('First task', 300),
+      this.createTodoItem('Second task', 300),
+      this.createTodoItem('Third task', 300),
   ],
   filter: 'all',
   };
 
-  createTodoItem(label, min, sec) {
+  createTodoItem(label, sec) {
     return {
       label,
       status: false,
       date: new Date(),
       id: uuidv4(),
       time: '0 seconds',
-      mins: min,
-      secs: sec,
+      fulltime: sec,
+      isTimer: null,
     };
   }
 
-  addItem = (label, min, sec) => {
-    const newItem = this.createTodoItem(label, min, sec);
+  addItem = (label, sec) => {
+    const newItem = this.createTodoItem(label, sec);
     this.setState(({ items }) => {
       const newArr = [
         ...items,
@@ -42,6 +42,55 @@ export default class App extends Component {
       };
     });
   };
+
+  onPause = (id) => {
+    const { items } = this.state;
+    const index = items.findIndex((el) => el.id === id);
+    const oldItem = items[index];
+    const clean = clearInterval(oldItem.isTimer);
+
+    const newItem = {
+        ...oldItem,
+        isTimer: clean,
+    };
+    const newData = [
+        ...items.slice(0, index),
+        newItem,
+        ...items.slice(index + 1),
+    ];
+    this.setState(() => ({
+      items: newData,
+    }));
+};
+
+onStart = (id) => {
+    const count = setInterval(() => {
+        const { items } = this.state;
+
+        const index = items.findIndex((el) => el.id === id);
+        const oldItem = items[index];
+
+        const time = oldItem.fulltime - 1;
+        if (time < 0 || oldItem.status) {
+            clearInterval(count);
+            return;
+        }
+
+        const newItem = {
+            ...oldItem,
+            isTimer: count,
+            fulltime: time,
+        };
+        const newData = [
+            ...items.slice(0, index),
+            newItem,
+            ...items.slice(index + 1),
+        ];
+        this.setState(() => ({
+          items: newData,
+        }));
+    }, 1000);
+};
 
   deleteItem = (id) => {
     this.setState(({ items }) => {
@@ -123,12 +172,16 @@ toggleProperty(id, property) {
       onDeleted={ this.deleteItem }
       onToggleDone={ this.onToggleDone }
       filter={filter}
-      changeTitle={this.changeTitle}/>
+      changeTitle={this.changeTitle}
+      onStart={this.onStart}
+      onPause={this.onPause}
+      />
       <Footer
       left={items.filter((item) => item.status === false).length}
       filter={filter}
       onFilterChange={ this.onFilterChange }
-      clearCompleted={ this.onClearCompleted }/>
+      clearCompleted={ this.onClearCompleted }
+      />
     </section>
     </section>
   )

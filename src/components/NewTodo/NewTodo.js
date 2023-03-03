@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import './NewTodo.css';
+
 export default class NewTodo extends Component {
   state = {
     label: '',
@@ -10,7 +12,7 @@ export default class NewTodo extends Component {
 
   onLabelChange = (e) => {
     if (e.target.value.length === 1) {
-        const label = e.target.value.replace(/^\s*$/, ' ');
+        const label = e.target.value.trim().replace(/ +/g, ' ');
         this.setState({
             label,
         });
@@ -21,25 +23,28 @@ export default class NewTodo extends Component {
     }
 };
 
-  onSubmit = (e) => {
-    const { label, mins, secs } = this.state;
-    const { onItemAdded } = this.props;
-    onItemAdded(label, mins, secs);
-    e.preventDefault();
-    this.setState({
-        label: '',
-        mins: '',
-        secs: '',
-    });
+onSubmit = (e) => {
+  e.preventDefault();
+  this.setState({
+      label: '',
+      secs: '',
+      mins: '',
+  });
+
+  const { label, mins, secs } = this.state;
+  const sec = Number(mins) * 60 + Number(secs);
+  const { onItemAdded } = this.props;
+  onItemAdded(label, sec);
 };
 
-    setSecs = (e) => {
-      this.setState({ secs: e.target.value });
-    };
+onSetTimer = (e) => {
+  if (/[0-9]|\./.test(e.target.value) || e.target.value === '') {
+      this.setState({
+          [e.target.name]: e.target.value,
 
-    setMins = (e) => {
-      this.setState({ mins: e.target.value });
-    };
+      });
+  }
+};
 
   render() {
     const { mins, secs, label } = this.state;
@@ -53,9 +58,10 @@ export default class NewTodo extends Component {
            autoFocus
            onChange={this.onLabelChange}
            value={label}
-           required/>
-           <input name="mins" value={mins} className="new-todo-form__timer" placeholder="Min" onChange={this.setMins} />
-          <input name="secs" value={secs} className="new-todo-form__timer" placeholder="Sec" onChange={this.setSecs} />
+           required
+           />
+           <input name="mins" value={mins} className="new-todo-form__timer" placeholder="Min" onChange={this.onSetTimer} />
+          <input name="secs" value={secs} className="new-todo-form__timer" placeholder="Sec" onChange={this.onSetTimer} />
           <input className="hidden" type="submit" />
       </form>
     </header>

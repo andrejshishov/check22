@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 
+import './Filters.css';
+
 const filterButtons = [
   { name: 'all', label: 'All' },
   { name: 'active', label: 'Active' },
